@@ -58,7 +58,7 @@ public class ATeleOPMAIN extends LinearOpMode {
 
     // FSM
     private enum FSMState {
-        IDLE, START, ELEVATOR_RIGHT_DOWN, ELEVATOR_LEFT_DOWN, ELEVATORS_UP, SHOOTER_ON, KICKER_IN, KICKER_OUT, SHOOTER_OFF
+        IDLE, SHOOTER_SPINUP, START, ELEVATOR_RIGHT_DOWN, ELEVATOR_LEFT_DOWN, ELEVATORS_UP, KICKER_IN, KICKER_OUT, SHOOTER_OFF
     }
 
     private FSMState fsmState = FSMState.IDLE;
@@ -80,8 +80,8 @@ public class ATeleOPMAIN extends LinearOpMode {
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
 
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -234,13 +234,18 @@ public class ATeleOPMAIN extends LinearOpMode {
     // =============== FSM FUNCTIONS ===============
     private void startBallFSM(int ball) {
         fsmActive = true;
-        fsmState = FSMState.START;
+        fsmState = FSMState.SHOOTER_SPINUP;
         fsmBall = ball;
         fsmTimer.reset();
     }
 
     private void runBallFSM() {
         switch (fsmState) {
+            case SHOOTER_SPINUP:
+                shooterLeft.setPower(SHOOTER_ON);
+                shooterRight.setPower(SHOOTER_ON);
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.START; fsmTimer.reset(); }
+                break;
             case START:
                 if (fsmBall == 1) spindexer.setPosition(SPINDEXER_ONE);
                 if (fsmBall == 2) spindexer.setPosition(SPINDEXER_TWO);
@@ -258,11 +263,6 @@ public class ATeleOPMAIN extends LinearOpMode {
             case ELEVATORS_UP:
                 elevatorLeft.setPosition(ELEVATOR_LEFT_UP);
                 elevatorRight.setPosition(ELEVATOR_RIGHT_UP);
-                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.SHOOTER_ON; fsmTimer.reset(); }
-                break;
-            case SHOOTER_ON:
-                shooterLeft.setPower(SHOOTER_ON);
-                shooterRight.setPower(SHOOTER_ON);
                 if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.KICKER_IN; fsmTimer.reset(); }
                 break;
             case KICKER_IN:
