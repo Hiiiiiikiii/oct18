@@ -11,7 +11,7 @@ public class MeepMeepMain {
         MeepMeep meepMeep = new MeepMeep(500);
 
         // Start position = ROBOT 1 (right side)
-        Pose2d startPose = new Pose2d(58.7, 12.1, Math.toRadians(180)); // facing up along Y
+        Pose2d startPose = new Pose2d(49.1, 49.9, Math.toRadians(180)); // facing up along Y
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
