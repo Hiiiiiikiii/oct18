@@ -8,11 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class ATeleOPMAIN extends LinearOpMode {
+public class AteleOpTest extends LinearOpMode {
 
     // ================== CONSTANTS ==================
     // Elevator
@@ -59,15 +58,18 @@ public class ATeleOPMAIN extends LinearOpMode {
 
     // FSM
     private enum FSMState {
-        IDLE, SPIN_SHOOTER, SPINDEXER_SET, ELEVATOR_RIGHT_DOWN, ELEVATOR_LEFT_DOWN,
-        ELEVATORS_UP, KICKER_IN, KICKER_OUT, SHOOTER_OFF
+        IDLE, START, ELEVATOR_RIGHT_DOWN, ELEVATOR_LEFT_DOWN, ELEVATORS_UP, SHOOTER_ON, KICKER_IN, KICKER_OUT, SHOOTER_OFF
     }
 
     private FSMState fsmState = FSMState.IDLE;
     private ElapsedTime fsmTimer = new ElapsedTime();
     private boolean fsmActive = false;
-    private int fsmBall = 0;
-    private boolean multiFSM = false; // true if Y is pressed
+    private int fsmBall = 0; // 1,2,3 for a,b,x
+
+    // Y FSM chain
+    private boolean yFSMActive = false;
+    private int yStep = 0;
+    private ElapsedTime yTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -142,10 +144,12 @@ public class ATeleOPMAIN extends LinearOpMode {
 
             // ===== MANUAL CONTROLS =====
             if (gamepad1.left_trigger > 0.2) {
-                hoodLeftPos -= step; hoodRightPos -= step;
+                hoodLeftPos -= step;
+                hoodRightPos -= step;
             }
             if (gamepad1.right_trigger > 0.2) {
-                hoodLeftPos += step; hoodRightPos += step;
+                hoodLeftPos += step;
+                hoodRightPos += step;
             }
             hoodLeftPos = Math.max(0, Math.min(1, hoodLeftPos));
             hoodRightPos = Math.max(0, Math.min(1, hoodRightPos));
@@ -161,7 +165,7 @@ public class ATeleOPMAIN extends LinearOpMode {
             if (gamepad1.dpad_right) intake.setPower(INTAKE_OFF);
             if (gamepad1.dpad_up) intake.setPower(INTAKE_REVERSE);
 
-            if (gamepad1.dpad_down && !fsmActive) {
+            if (gamepad2.dpad_up && !fsmActive) {
                 elevatorLeft.setPosition(ELEVATOR_LEFT_UP);
                 elevatorRight.setPosition(ELEVATOR_RIGHT_UP);
                 spindexer.setPosition(SPINDEXER_INTAKE);
@@ -174,21 +178,45 @@ public class ATeleOPMAIN extends LinearOpMode {
                 shooterRight.setPower(SHOOTER_OFF);
             }
 
-            // ===== FSM START CONDITIONS =====
-            if (!fsmActive) {
-                if (gamepad1.a) { startFSM(1, false); }
-                if (gamepad1.b) { startFSM(2, false); }
-                if (gamepad1.x) { startFSM(3, false); }
-                if (gamepad1.y) { startFSM(1, true); } // multi run
+            // ===== NORMAL FSM TRIGGERS (A, B, X) =====
+            if (!fsmActive && !yFSMActive) {
+                if (gamepad1.a) startBallFSM(1);
+                if (gamepad1.b) startBallFSM(2);
+                if (gamepad1.x) startBallFSM(3);
             }
 
-            // ===== FSM LOGIC =====
-            if (fsmActive) runFSM();
+            // ===== Y FSM SEQUENCE =====
+            if (gamepad1.y && !fsmActive && !yFSMActive) {
+                yFSMActive = true;
+                yStep = 0;
+                yTimer.reset();
+            }
+
+            if (yFSMActive && !fsmActive) {
+                switch (yStep) {
+                    case 0:
+                        startBallFSM(1);
+                        yStep++;
+                        break;
+                    case 1:
+                        if (yTimer.milliseconds() > 500) { startBallFSM(2); yStep++; yTimer.reset(); }
+                        break;
+                    case 2:
+                        if (yTimer.milliseconds() > 500) { startBallFSM(3); yStep++; yTimer.reset(); }
+                        break;
+                    case 3:
+                        yFSMActive = false;
+                        break;
+                }
+            }
+
+            // ===== FSM RUNNER =====
+            if (fsmActive) runBallFSM();
 
             // ===== TELEMETRY =====
             telemetry.addData("FSM Active", fsmActive);
             telemetry.addData("FSM State", fsmState);
-            telemetry.addData("FSM Ball", fsmBall);
+            telemetry.addData("Y FSM Active", yFSMActive);
             telemetry.addData("Turret", turret.getPosition());
             telemetry.addData("Hood L", hoodLeft.getPosition());
             telemetry.addData("Hood R", hoodRight.getPosition());
@@ -203,84 +231,48 @@ public class ATeleOPMAIN extends LinearOpMode {
         }
     }
 
-    // ===== FSM START =====
-    private void startFSM(int ball, boolean multi) {
-        fsmBall = ball;
-        multiFSM = multi;
+    // =============== FSM FUNCTIONS ===============
+    private void startBallFSM(int ball) {
         fsmActive = true;
-        fsmState = FSMState.SPIN_SHOOTER;
+        fsmState = FSMState.START;
+        fsmBall = ball;
         fsmTimer.reset();
     }
 
-    // ===== FSM SEQUENCE =====
-    private void runFSM() {
+    private void runBallFSM() {
         switch (fsmState) {
-            case SPIN_SHOOTER:
-                shooterLeft.setPower(SHOOTER_ON);
-                shooterRight.setPower(SHOOTER_ON);
-                if (fsmTimer.milliseconds() > 500) {
-                    fsmState = FSMState.SPINDEXER_SET;
-                    fsmTimer.reset();
-                }
-                break;
-
-            case SPINDEXER_SET:
+            case START:
                 if (fsmBall == 1) spindexer.setPosition(SPINDEXER_ONE);
                 if (fsmBall == 2) spindexer.setPosition(SPINDEXER_TWO);
                 if (fsmBall == 3) spindexer.setPosition(SPINDEXER_THREE);
-                if (fsmTimer.milliseconds() > 1000) {
-                    fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
-                    fsmTimer.reset();
-                }
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.ELEVATOR_RIGHT_DOWN; fsmTimer.reset(); }
                 break;
-
             case ELEVATOR_RIGHT_DOWN:
                 elevatorRight.setPosition(ELEVATOR_RIGHT_DOWN);
-                if (fsmTimer.milliseconds() > 500) {
-                    fsmState = FSMState.ELEVATOR_LEFT_DOWN;
-                    fsmTimer.reset();
-                }
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.ELEVATOR_LEFT_DOWN; fsmTimer.reset(); }
                 break;
-
             case ELEVATOR_LEFT_DOWN:
                 elevatorLeft.setPosition(ELEVATOR_LEFT_DOWN);
-                if (fsmTimer.milliseconds() > 500) {
-                    fsmState = FSMState.ELEVATORS_UP;
-                    fsmTimer.reset();
-                }
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.ELEVATORS_UP; fsmTimer.reset(); }
                 break;
-
             case ELEVATORS_UP:
                 elevatorLeft.setPosition(ELEVATOR_LEFT_UP);
                 elevatorRight.setPosition(ELEVATOR_RIGHT_UP);
-                if (fsmTimer.milliseconds() > 500) {
-                    fsmState = FSMState.KICKER_IN;
-                    fsmTimer.reset();
-                }
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.SHOOTER_ON; fsmTimer.reset(); }
                 break;
-
+            case SHOOTER_ON:
+                shooterLeft.setPower(SHOOTER_ON);
+                shooterRight.setPower(SHOOTER_ON);
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.KICKER_IN; fsmTimer.reset(); }
+                break;
             case KICKER_IN:
                 kicker.setPosition(KICKER_IN);
-                if (fsmTimer.milliseconds() > 500) {
-                    fsmState = FSMState.KICKER_OUT;
-                    fsmTimer.reset();
-                }
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.KICKER_OUT; fsmTimer.reset(); }
                 break;
-
             case KICKER_OUT:
                 kicker.setPosition(KICKER_OUT);
-                if (fsmTimer.milliseconds() > 500) {
-                    if (multiFSM && fsmBall < 3) {
-                        fsmBall++;
-                        fsmState = FSMState.SPINDEXER_SET;
-                        fsmTimer.reset();
-                    } else {
-                        fsmState = FSMState.SHOOTER_OFF;
-                        fsmTimer.reset();
-                    }
-                }
+                if (fsmTimer.milliseconds() > 500) { fsmState = FSMState.SHOOTER_OFF; fsmTimer.reset(); }
                 break;
-
             case SHOOTER_OFF:
                 shooterLeft.setPower(SHOOTER_OFF);
                 shooterRight.setPower(SHOOTER_OFF);

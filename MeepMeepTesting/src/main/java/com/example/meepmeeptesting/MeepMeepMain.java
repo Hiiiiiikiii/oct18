@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class MeepMeepTesting {
+public class MeepMeepMain {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(500);
 
@@ -19,14 +19,13 @@ public class MeepMeepTesting {
 
         myBot.runAction(
                 myBot.getDrive().actionBuilder(startPose)
-                        //at the startpose it should shoot the three balls, in the five seconds given, and then reset everyhtign but, it should turn on intake
                         .waitSeconds(5)
-                        .splineToConstantHeading(new Vector2d(9.9, 50), Math.toRadians(90))// this will pick up all three balls
+                        .splineToConstantHeading(new Vector2d(9.9, 50), Math.toRadians(90))
                         .waitSeconds(5)
-                        .splineToConstantHeading(new Vector2d(0, 56), Math.toRadians(90))// this moves to the gate
+                        .splineToConstantHeading(new Vector2d(0, 56), Math.toRadians(90))
                         .waitSeconds(5)
                         .strafeTo(new Vector2d(0,36.4))
-                        .strafeTo(new Vector2d(58.7,12.1)) //this line will go to the start position again, and after it reaches wait 1 second and shoot the three balls that it intook
+                        .strafeTo(new Vector2d(58.7,12.1))
                         .waitSeconds(5)
 
                         .build()
