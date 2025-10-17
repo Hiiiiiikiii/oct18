@@ -204,7 +204,7 @@ public class ATeleOPMAIN extends LinearOpMode {
     }
 
     // ===== FSM START =====
-    private void startFSM(int ball, boolean multi) {
+    public void startFSM(int ball, boolean multi) {
         fsmBall = ball;
         multiFSM = multi;
         fsmActive = true;
@@ -213,7 +213,7 @@ public class ATeleOPMAIN extends LinearOpMode {
     }
 
     // ===== FSM SEQUENCE =====
-    private void runFSM() {
+    public void runFSM() {
         switch (fsmState) {
             case SPIN_SHOOTER:
                 shooterLeft.setPower(SHOOTER_ON);
