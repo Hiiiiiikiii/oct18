@@ -14,13 +14,11 @@ import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Oct18.HoodTurretController;
 import org.firstinspires.ftc.teamcode.Oct18.RobotConstants;
 import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
-import org.firstinspires.ftc.teamcode.Autos.MotorPowerFunctions;
-import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
 
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class FarMotorPower6 extends LinearOpMode {
+public class FarMotorPowerBlue6 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -125,10 +123,10 @@ public class FarMotorPower6 extends LinearOpMode {
                     intake.setPower(1);
                     //run drive
                     robot.move(.7, 500);
-                    robot.turn(.7,250);
+                    robot.turn(-.7,250);
                     robot.move(1,300);
                     robot.move(-1,300);
-                    robot.turn(-.7,250);
+                    robot.turn(.7,250);
                     robot.move(-7,500);
 
                     intake.setPower(0);
@@ -143,10 +141,10 @@ public class FarMotorPower6 extends LinearOpMode {
                     intake.setPower(1);
                     //run drive
                     robot.move(.7, 500);
-                    robot.turn(.7,250);
+                    robot.turn(-.7,250);
                     robot.move(1,300);
                     robot.move(-1,300);
-                    robot.turn(-.7,250);
+                    robot.turn(.7,250);
                     robot.move(-7,500);
                     intake.setPower(0);
                     //change this to based on color sensor detection
@@ -159,10 +157,10 @@ public class FarMotorPower6 extends LinearOpMode {
                     shooterFSM.startFSM(1, false); //green
                     intake.setPower(1);
                     robot.move(.7, 500);
-                    robot.turn(.7,250);
+                    robot.turn(-.7,250);
                     robot.move(1,300);
                     robot.move(-1,300);
-                    robot.turn(-.7,250);
+                    robot.turn(.7,250);
                     robot.move(-7,500);
                     intake.setPower(0);
                     //change this to based on color sensor detection
