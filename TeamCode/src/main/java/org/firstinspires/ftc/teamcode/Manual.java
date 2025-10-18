@@ -17,10 +17,13 @@ public class Manual extends LinearOpMode {
     public static final double ELEVATOR_RIGHT_DOWN = 330.0 / 355.0;
 
     // Spindexer
-    public static final double SPINDEXER_THREE = 270.0 / 355.0;
-    public static final double SPINDEXER_TWO = 130.0 / 355.0;
     public static final double SPINDEXER_ONE = 0.0 / 355.0;
+    public static final double SPINDEXER_TWO = 130.0 / 355.0;
+    public static final double SPINDEXER_THREE = 270.0 / 355.0;
     public static final double SPINDEXER_INTAKE = 65.0 / 355.0;
+
+    // Use double literals to avoid integer division
+    public static double SPINDEXER_POS = 5.0 / 355.0;
 
     // Kicker
     public static final double KICKER_OUT = 286.0 / 355.0;
@@ -36,11 +39,10 @@ public class Manual extends LinearOpMode {
     public static final double SHOOTER_OFF = 0.0;
 
     // Turret
-    public static final double TURRET_INITIAL = 75.0 / 355.0;
+    public static final double TURRET_INITIAL = 0.5;
 
     // Hood
-    public static final double HOOD_INITIAL = 55.0 / 355.0;
-
+//    public static final double HOOD_INITIAL = 25.0 / 355.0;
     // Step for servo adjustments
     private final double step = 5.0 / 355.0;
 
@@ -58,8 +60,14 @@ public class Manual extends LinearOpMode {
     private DcMotor shooterRight;
 
     private double turretPos = TURRET_INITIAL;
-    private double hoodLeftPos = HOOD_INITIAL;
-    private double hoodRightPos = HOOD_INITIAL;
+//    private double hoodLeftPos = HOOD_INITIAL;
+//    private double hoodRightPos = HOOD_INITIAL;
+
+    // previous-state flags - move outside loop so they persist
+    private boolean prevDpadLeft = false;
+    private boolean prevDpadRight = false;
+    private boolean prevSpinLeft = false;
+    private boolean prevSpinRight = false;
 
     // ================== MAIN CODE ==================
     @Override
@@ -70,8 +78,8 @@ public class Manual extends LinearOpMode {
         elevatorLeft = hardwareMap.get(Servo.class, "el");
         elevatorRight = hardwareMap.get(Servo.class, "er");
         turret = hardwareMap.get(Servo.class, "tur");
-        hoodLeft = hardwareMap.get(Servo.class, "hl");
-        hoodRight = hardwareMap.get(Servo.class, "hr");
+//        hoodLeft = hardwareMap.get(Servo.class, "hl");
+//        hoodRight = hardwareMap.get(Servo.class, "hr");
         spindexer = hardwareMap.get(Servo.class, "spin");
 
         intake = hardwareMap.get(DcMotor.class, "in");
@@ -81,11 +89,11 @@ public class Manual extends LinearOpMode {
         // --- Initial Positions ---
         elevatorLeft.setPosition(ELEVATOR_LEFT_UP);
         elevatorRight.setPosition(ELEVATOR_RIGHT_UP);
-        spindexer.setPosition(SPINDEXER_INTAKE);
+        spindexer.setPosition(SPINDEXER_POS); // use SPINDEXER_POS initial value
         kicker.setPosition(KICKER_OUT);
         turret.setPosition(TURRET_INITIAL);
-        hoodLeft.setPosition(hoodLeftPos);
-        hoodRight.setPosition(hoodRightPos);
+//        hoodLeft.setPosition(hoodLeftPos);
+//        hoodRight.setPosition(hoodRightPos);
         intake.setPower(INTAKE_OFF);
         shooterLeft.setPower(SHOOTER_OFF);
         shooterRight.setPower(SHOOTER_OFF);
@@ -120,8 +128,6 @@ public class Manual extends LinearOpMode {
             }
 
             // TURRET MOVEMENT - per click
-            boolean prevDpadLeft = false;
-            boolean prevDpadRight = false;
             if (gamepad1.dpad_left && !prevDpadLeft) {
                 turretPos = turretPos - step;
             }
@@ -129,13 +135,13 @@ public class Manual extends LinearOpMode {
                 turretPos = turretPos + step;
             }
 
-// clamp
+            // clamp turret
             if (turretPos < 0) turretPos = 0;
             if (turretPos > 1) turretPos = 1;
 
             turret.setPosition(turretPos);
 
-// update previous state
+            // update previous state for turret
             prevDpadLeft = gamepad1.dpad_left;
             prevDpadRight = gamepad1.dpad_right;
 
@@ -166,51 +172,75 @@ public class Manual extends LinearOpMode {
             // ===== Gamepad 2 =====
 
             // --- Hood movement ---
-            if (gamepad2.dpad_up) {
-                hoodLeftPos = hoodLeftPos + step;
-                hoodRightPos = hoodRightPos + step;
-            }
+//            if (gamepad2.dpad_up) {
+//                hoodLeftPos = hoodLeftPos + step;
+//                hoodRightPos = hoodRightPos + step;
+//            }
+//
+//            if (gamepad2.dpad_down) {
+//                hoodLeftPos = hoodLeftPos - step;
+//                hoodRightPos = hoodRightPos - step;
+//            }
+//
+//            // clamp hood positions
+//            if (hoodLeftPos < 0) {
+//                hoodLeftPos = 0;
+//            }
+//
+//            if (hoodLeftPos > 1) {
+//                hoodLeftPos = 1;
+//            }
+//
+//            if (hoodRightPos < 0) {
+//                hoodRightPos = 0;
+//            }
+//
+//            if (hoodRightPos > 1) {
+//                hoodRightPos = 1;
+//            }
+//
+//            hoodLeft.setPosition(hoodLeftPos);
+//            hoodRight.setPosition(hoodRightPos);
 
-            if (gamepad2.dpad_down) {
-                hoodLeftPos = hoodLeftPos - step;
-                hoodRightPos = hoodRightPos - step;
-            }
-
-            if (hoodLeftPos < 0) {
-                hoodLeftPos = 0;
-            }
-
-            if (hoodLeftPos > 1) {
-                hoodLeftPos = 1;
-            }
-
-            if (hoodRightPos < 0) {
-                hoodRightPos = 0;
-            }
-
-            if (hoodRightPos > 1) {
-                hoodRightPos = 1;
-            }
-
-            hoodLeft.setPosition(hoodLeftPos);
-            hoodRight.setPosition(hoodRightPos);
-
-            // --- Spindexer positions ---
+            // --- Spindexer positions (preset buttons) ---
             if (gamepad2.a) {
-                spindexer.setPosition(SPINDEXER_ONE);
+                SPINDEXER_POS = SPINDEXER_ONE;
+                spindexer.setPosition(SPINDEXER_POS);
             }
 
             if (gamepad2.b) {
-                spindexer.setPosition(SPINDEXER_TWO);
+                SPINDEXER_POS = SPINDEXER_TWO;
+                spindexer.setPosition(SPINDEXER_POS);
             }
 
             if (gamepad2.x) {
-                spindexer.setPosition(SPINDEXER_THREE);
+                SPINDEXER_POS = SPINDEXER_THREE;
+                spindexer.setPosition(SPINDEXER_POS);
             }
 
             if (gamepad2.y) {
-                spindexer.setPosition(SPINDEXER_INTAKE);
+                SPINDEXER_POS = SPINDEXER_INTAKE;
+                spindexer.setPosition(SPINDEXER_POS);
             }
+
+            // --- Spindexer fine-adjust per click ---
+            if (gamepad2.dpad_left && !prevSpinLeft) {
+                SPINDEXER_POS = SPINDEXER_POS - step;
+            }
+            if (gamepad2.dpad_right && !prevSpinRight) {
+                SPINDEXER_POS = SPINDEXER_POS + step;
+            }
+
+            // clamp spindexer
+            if (SPINDEXER_POS < 0) SPINDEXER_POS = 0;
+            if (SPINDEXER_POS > 1) SPINDEXER_POS = 1;
+
+            // apply to servo
+            spindexer.setPosition(SPINDEXER_POS);
+
+            // update previous state for spindexer
+            prevSpinLeft = gamepad2.dpad_left;
+            prevSpinRight = gamepad2.dpad_right;
 
             // ===== Telemetry =====
             telemetry.addLine("=== Servos ===");
@@ -218,8 +248,8 @@ public class Manual extends LinearOpMode {
             telemetry.addData("Elevator L", elevatorLeft.getPosition());
             telemetry.addData("Elevator R", elevatorRight.getPosition());
             telemetry.addData("Turret", turret.getPosition());
-            telemetry.addData("Hood L", hoodLeft.getPosition());
-            telemetry.addData("Hood R", hoodRight.getPosition());
+//            telemetry.addData("Hood L", hoodLeft.getPosition());
+//            telemetry.addData("Hood R", hoodRight.getPosition());
             telemetry.addData("Spindexer", spindexer.getPosition());
 
             telemetry.addLine("=== Motors ===");

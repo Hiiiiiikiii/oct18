@@ -1,53 +1,67 @@
 package org.firstinspires.ftc.teamcode.Autos;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.ATeleOPMAIN;
-import org.firstinspires.ftc.teamcode.AteleOpTest;
+import org.firstinspires.ftc.teamcode.RobotHardware;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.ShooterFSMAction;
 
 @Config
-@Autonomous
-public class RedFar6 extends ATeleOPMAIN {
+@Autonomous(name = "RedFar6", group = "Auto")
+public class RedFar6 extends LinearOpMode {
 
     @Override
-    public void runOpMode() {
-        ATeleOPMAIN robot = new ATeleOPMAIN();
-        Pose2d startPose = new Pose2d(58.7, 12.1, Math.toRadians(180));
-        double timeAfterScore = 0.25;
+    public void runOpMode() throws InterruptedException {
 
-        // vision here that outputs position
+        // ===== Initialize Robot Hardware =====
+        RobotHardware robot = new RobotHardware();
+        robot.init(hardwareMap);
 
-        Action scorePreload = drive.actionBuilder(initialPose)
-                .stopAndAdd(new SequentialAction(robot.runFSM());
-                .waitSeconds(5)
-                .splineToConstantHeading(new Vector2d(9.9, 50), Math.toRadians(90))// this will pick up all three balls
-                .waitSeconds(5)
-                .splineToConstantHeading(new Vector2d(0, 56), Math.toRadians(90))// this moves to the gate
-                .waitSeconds(5)
-                .strafeTo(new Vector2d(0,36.4))
-                .strafeTo(new Vector2d(58.7,12.1)) //this line will go to the start position again, and after it reaches wait 1 second and shoot the three balls that it intook
-                .waitSeconds(5)
+        // ===== Initialize Drive =====
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(58.7, 12.1, Math.toRadians(180)));
+
+        // ===== FSM Shooter Action =====
+        ShooterFSMAction shootPreload = new ShooterFSMAction(robot, 1, false);
+
+        // ===== Build Full Auto Sequence =====
+        SequentialAction fullAuto = (SequentialAction) drive.actionBuilder(new Pose2d(58.7, 12.1, Math.toRadians(180)))
+                // --- Shoot preload ---
+                .stopAndAdd(shootPreload)  // runs FSM action
+                .waitSeconds(1.0)
+
+                // --- Move to collect balls ---
+                .splineToConstantHeading(new Vector2d(9.9, 50), Math.toRadians(90))
+                .waitSeconds(0.5)
+
+                // --- Move to gate ---
+                .splineToConstantHeading(new Vector2d(0, 56), Math.toRadians(90))
+                .waitSeconds(0.5)
+
+                // --- Move back to start ---
+                .strafeTo(new Vector2d(0, 36.4))
+                .strafeTo(new Vector2d(58.7, 12.1))
+                .waitSeconds(1.0)
+
+                // --- Shoot all balls ---
+                .stopAndAdd(new ShooterFSMAction(robot, 1, true))
                 .build();
 
 
-        waitForStart();
+        telemetry.addLine("Ready - Press Play");
+        telemetry.update();
 
+        waitForStart();
         if (isStopRequested()) return;
 
-
+        // ===== Run the entire auto path + FSMs =====
         Actions.runBlocking(
-                new SequentialAction(
-                        scorePreload
-                )
+                new SequentialAction(fullAuto)
         );
-
     }
 }
