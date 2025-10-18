@@ -10,9 +10,11 @@ public class RobotConstants {
 
     // ===== SPINDEXER =====
     public static final double SPINDEXER_ONE = 0.0 / 355.0;
-    public static final double SPINDEXER_TWO = 135.0 / 355.0;
-    public static final double SPINDEXER_THREE = 268.0 / 355.0;
+    public static final double SPINDEXER_TWO = 130.0 / 355.0;
+    public static final double SPINDEXER_THREE = 270.0 / 355.0;
     public static final double SPINDEXER_INTAKE = 65.0 / 355.0;
+
+    public static final double SPINDEXER_INTAKE2 = 245.0 / 355.0;
 
     // ===== KICKER =====
     public static final double KICKER_OUT = 286.0 / 355.0;
@@ -28,8 +30,13 @@ public class RobotConstants {
     public static final double SHOOTER_OFF = 0.0;
 
     // ===== TURRET =====
-    public static final double TURRET_INITIAL = 0.5;
+    public static final double TURRET_INITIAL = 72.481/355;
+    public static final double TURRET_RED_AUTO = 0.15;
+    public static final double TURRET_BLUE_AUTO = 0.85;
 
     // ===== HOOD =====
     public static final double HOOD_INITIAL = 35.0 / 355.0;
+    public static final double HOOD_FAR = 120 / 355.0;
+    public static final double HOOD_NEAR = 99.4 / 355.0;
+
 }

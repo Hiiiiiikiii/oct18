@@ -11,23 +11,20 @@ public class MeepMeepMain {
         MeepMeep meepMeep = new MeepMeep(500);
 
         // Start position = ROBOT 1 (right side)
-        Pose2d startPose = new Pose2d(49.1, 49.9, Math.toRadians(180)); // facing up along Y
-
+        Pose2d startPose = new Pose2d(58.7, 12.1, Math.toRadians(180)); // facing up along Y
+        Vector2d START = new Vector2d(58.7,12.1);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
         myBot.runAction(
                 myBot.getDrive().actionBuilder(startPose)
-                        .waitSeconds(5)
-                        .splineToConstantHeading(new Vector2d(9.9, 50), Math.toRadians(90))
-                        .waitSeconds(5)
-                        .splineToConstantHeading(new Vector2d(0, 56), Math.toRadians(90))
-                        .waitSeconds(5)
-                        .strafeTo(new Vector2d(0,36.4))
-                        .strafeTo(new Vector2d(58.7,12.1))
-                        .waitSeconds(5)
-
+                        .waitSeconds(10)
+                        .splineToConstantHeading(new Vector2d(35, 58), Math.toRadians(90))
+                        .waitSeconds(3)
+                        .strafeTo(START)
+                        .waitSeconds(10)
+//
                         .build()
         );
 

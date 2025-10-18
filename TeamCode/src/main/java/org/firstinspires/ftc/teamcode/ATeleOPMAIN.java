@@ -7,10 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp
+@TeleOp(name = "ATeleOPMAIN", group = "Main")
 public class ATeleOPMAIN extends LinearOpMode {
 
     @Override
@@ -23,19 +22,17 @@ public class ATeleOPMAIN extends LinearOpMode {
         DcMotor backRightMotor = hardwareMap.dcMotor.get("br");
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        IMU imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(
-                new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-        imu.initialize(parameters);
+        // ===== CONSTANTS =====
+        double hoodStepFine = 1.0 / 355.0;
+        double turretStepFine = 5.0 / 355.0;     // Turret tester step
+        double TURRET_INITIAL = 177.5 / 355.0;   // Updated initial
 
         // ===== MECHANISM =====
         Servo kicker = hardwareMap.get(Servo.class, "kick");
@@ -55,12 +52,14 @@ public class ATeleOPMAIN extends LinearOpMode {
         elevatorRight.setPosition(RobotConstants.ELEVATOR_RIGHT_UP);
         spindexer.setPosition(RobotConstants.SPINDEXER_INTAKE);
         kicker.setPosition(RobotConstants.KICKER_OUT);
-        turret.setPosition(RobotConstants.TURRET_INITIAL);
+        turret.setPosition(TURRET_INITIAL);
         hoodLeft.setPosition(RobotConstants.HOOD_INITIAL);
         hoodRight.setPosition(RobotConstants.HOOD_INITIAL);
         intake.setPower(RobotConstants.INTAKE_OFF);
         shooterLeft.setPower(RobotConstants.SHOOTER_OFF);
         shooterRight.setPower(RobotConstants.SHOOTER_OFF);
+
+        double turretPos = TURRET_INITIAL;  // Track turret position
 
         // ===== CONTROLLERS =====
         HoodTurretController hoodTurretController = new HoodTurretController(turret, hoodLeft, hoodRight);
@@ -74,24 +73,27 @@ public class ATeleOPMAIN extends LinearOpMode {
 
             // ===== DRIVE =====
             double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x;
+            double x = gamepad1.left_stick_x * 1.1;
             double rx = gamepad1.right_stick_x;
 
-            if (gamepad1.options) imu.resetYaw();
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-            rotX *= 1.1;
+            frontLeftMotor.setPower(frontLeftPower);
+            backLeftMotor.setPower(backLeftPower);
+            frontRightMotor.setPower(frontRightPower);
+            backRightMotor.setPower(backRightPower);
 
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            frontLeftMotor.setPower((rotY + rotX + rx) / denominator);
-            backLeftMotor.setPower((rotY - rotX + rx) / denominator);
-            frontRightMotor.setPower((rotY - rotX - rx) / denominator);
-            backRightMotor.setPower((rotY + rotX - rx) / denominator);
+            // ===== HOOD & TURRET CONTROLLER =====
+            hoodTurretController.update(gamepad1, gamepad2);
 
-            // ===== HOOD & TURRET =====
-            hoodTurretController.update(gamepad1);
+            // ===== SPINDEXER SECONDARY POSITIONS =====
+            if (gamepad2.a) spindexer.setPosition(245.0 / 355.0); // Intake2
+            if (gamepad2.b) spindexer.setPosition(RobotConstants.SPINDEXER_TWO);
+            if (gamepad2.x) spindexer.setPosition(RobotConstants.SPINDEXER_THREE);
 
             // ===== INTAKE =====
             if (gamepad1.dpad_left) intake.setPower(RobotConstants.INTAKE_ON);
@@ -104,12 +106,13 @@ public class ATeleOPMAIN extends LinearOpMode {
                 elevatorRight.setPosition(RobotConstants.ELEVATOR_RIGHT_UP);
                 spindexer.setPosition(RobotConstants.SPINDEXER_INTAKE);
                 kicker.setPosition(RobotConstants.KICKER_OUT);
-                turret.setPosition(RobotConstants.TURRET_INITIAL);
+                turret.setPosition(TURRET_INITIAL);
                 hoodLeft.setPosition(RobotConstants.HOOD_INITIAL);
                 hoodRight.setPosition(RobotConstants.HOOD_INITIAL);
                 intake.setPower(RobotConstants.INTAKE_OFF);
                 shooterLeft.setPower(RobotConstants.SHOOTER_OFF);
                 shooterRight.setPower(RobotConstants.SHOOTER_OFF);
+                turretPos = TURRET_INITIAL;
             }
 
             // ===== FSM BUTTONS =====
@@ -117,22 +120,19 @@ public class ATeleOPMAIN extends LinearOpMode {
                 if (gamepad1.a) shooterFSM.startFSM(1, false);
                 if (gamepad1.b) shooterFSM.startFSM(2, false);
                 if (gamepad1.x) shooterFSM.startFSM(3, false);
-                if (gamepad1.y) shooterFSM.startFSM(1, true); // multi FSM
+                if (gamepad1.y) shooterFSM.startFSM(1, true);
             }
 
             // ===== FSM UPDATE =====
             shooterFSM.updateFSM();
 
             // ===== TELEMETRY =====
+            telemetry.addData("Turret Position", turretPos);
+            telemetry.addData("Hood L", hoodLeft.getPosition());
+            telemetry.addData("Hood R", hoodRight.getPosition());
             telemetry.addData("FSM Active", shooterFSM.isActive());
             telemetry.addData("FSM State", shooterFSM.getState());
             telemetry.addData("FSM Ball", shooterFSM.getBall());
-            telemetry.addData("Turret", turret.getPosition());
-            telemetry.addData("Hood L", hoodLeft.getPosition());
-            telemetry.addData("Hood R", hoodRight.getPosition());
-            telemetry.addData("Elevator L", elevatorLeft.getPosition());
-            telemetry.addData("Elevator R", elevatorRight.getPosition());
-            telemetry.addData("Kicker", kicker.getPosition());
             telemetry.addData("Spindexer", spindexer.getPosition());
             telemetry.addData("Intake", intake.getPower());
             telemetry.addData("Shooter L", shooterLeft.getPower());

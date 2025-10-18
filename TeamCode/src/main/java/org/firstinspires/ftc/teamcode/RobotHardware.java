@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -45,7 +46,8 @@ public class RobotHardware {
     // ================= HARDWARE =================
     public Servo kicker, elevatorLeft, elevatorRight, turret, hoodLeft, hoodRight, spindexer;
     public DcMotor intake, shooterLeft, shooterRight;
-    public Limelight3A limelight;
+
+    public HuskyLens huskyLens;
 
     // ================= INIT METHOD =================
     public void init(HardwareMap hardwareMap) {
@@ -60,9 +62,10 @@ public class RobotHardware {
         intake = hardwareMap.get(DcMotor.class, "in");
         shooterLeft = hardwareMap.get(DcMotor.class, "sl");
         shooterRight = hardwareMap.get(DcMotor.class, "sr");
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100); // Set polling rate to 100Hz
-        limelight.start(); // Start the Limelight
+
+        huskyLens = hardwareMap.get(HuskyLens.class, "husky");
+
+
 
         // Set initial positions and powers
         elevatorLeft.setPosition(ELEVATOR_LEFT_UP);
