@@ -124,6 +124,13 @@ public class FarMotorPower6 extends LinearOpMode {
                     shooterFSM.startFSM(3, false); //purple
                     intake.setPower(1);
                     //run drive
+                    robot.move(.7, 500);
+                    robot.turn(.7,250);
+                    robot.move(1,300);
+                    robot.move(-1,300);
+                    robot.turn(-.7,250);
+                    robot.move(-7,500);
+
                     intake.setPower(0);
                     //change this to based on color sensor detection
                     shooterFSM.startFSM(1, false); //green
@@ -135,6 +142,12 @@ public class FarMotorPower6 extends LinearOpMode {
                     shooterFSM.startFSM(3, false); //purple
                     intake.setPower(1);
                     //run drive
+                    robot.move(.7, 500);
+                    robot.turn(.7,250);
+                    robot.move(1,300);
+                    robot.move(-1,300);
+                    robot.turn(-.7,250);
+                    robot.move(-7,500);
                     intake.setPower(0);
                     //change this to based on color sensor detection
                     shooterFSM.startFSM(2, false); //green
@@ -145,7 +158,12 @@ public class FarMotorPower6 extends LinearOpMode {
                     shooterFSM.startFSM(3, false); //purple
                     shooterFSM.startFSM(1, false); //green
                     intake.setPower(1);
-                    //run drive
+                    robot.move(.7, 500);
+                    robot.turn(.7,250);
+                    robot.move(1,300);
+                    robot.move(-1,300);
+                    robot.turn(-.7,250);
+                    robot.move(-7,500);
                     intake.setPower(0);
                     //change this to based on color sensor detection
                     shooterFSM.startFSM(2, false); //green
