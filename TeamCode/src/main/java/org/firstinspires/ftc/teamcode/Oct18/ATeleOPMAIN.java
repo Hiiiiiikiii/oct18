@@ -1,13 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Oct18;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "ATeleOPMAIN", group = "Main")
 public class ATeleOPMAIN extends LinearOpMode {
@@ -88,7 +85,7 @@ public class ATeleOPMAIN extends LinearOpMode {
             backRightMotor.setPower(backRightPower);
 
             // ===== HOOD & TURRET CONTROLLER =====
-            hoodTurretController.update(gamepad1, gamepad2);
+            hoodTurretController.update(gamepad1, gamepad2);    
 
             // ===== SPINDEXER SECONDARY POSITIONS =====
             if (gamepad2.a) spindexer.setPosition(245.0 / 355.0); // Intake2
