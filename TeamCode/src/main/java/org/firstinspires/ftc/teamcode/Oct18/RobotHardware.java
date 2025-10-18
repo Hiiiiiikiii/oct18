@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Oct18;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 
 public class RobotHardware {
@@ -78,5 +77,7 @@ public class RobotHardware {
         intake.setPower(INTAKE_OFF);
         shooterLeft.setPower(SHOOTER_OFF);
         shooterRight.setPower(SHOOTER_OFF);
+
+
     }
 }
