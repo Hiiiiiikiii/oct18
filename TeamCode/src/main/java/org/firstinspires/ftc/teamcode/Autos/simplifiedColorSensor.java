@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Autos;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
-public class simplifiedColorSensor extends LinearOpMode {
+public class simplifiedColorSensor {
 
     // Sensors
     public NormalizedColorSensor colorLeft;
@@ -18,33 +20,32 @@ public class simplifiedColorSensor extends LinearOpMode {
     //RGB Values
     //TODO: NEED TO TUNE THESE
     private final Color kGreenTarget = new Color(0.145, 0.588, 0.745);
-    public void runOpMode() {
+
+    int colorSense() {
 
         //Sensors
         colorLeft = hardwareMap.get(NormalizedColorSensor.class, "cl");
         colorCenter = hardwareMap.get(NormalizedColorSensor.class, "cc");
         colorRight = hardwareMap.get(NormalizedColorSensor.class, "cr");
 
-        waitForStart();
+        detectedLeft = colorLeft.getNormalizedColors();
+        detectedCenter = colorCenter.getNormalizedColors();
+        detectedRight = colorRight.getNormalizedColors();
 
-        while (opModeIsActive()) {
-            detectedLeft = colorLeft.getNormalizedColors();
-            detectedCenter = colorCenter.getNormalizedColors();
-            detectedRight = colorRight.getNormalizedColors();
+        //Comparing Left Color Sensor
+        double leftGreenDistance = colorDistance(detectedLeft, kGreenTarget);
+        double centerGreenDistance = colorDistance(detectedCenter, kGreenTarget);
+        double rightGreenDistance = colorDistance(detectedRight, kGreenTarget);
 
-            //Comparing Left Color Sensor
-            double leftGreenDistance = colorDistance(detectedLeft, kGreenTarget);
-            double centerGreenDistance = colorDistance(detectedCenter, kGreenTarget);
-            double rightGreenDistance = colorDistance(detectedRight, kGreenTarget);
-
-            if (leftGreenDistance > centerGreenDistance && leftGreenDistance > rightGreenDistance) {
-                greenLocation = 1;
-            } else if (centerGreenDistance > leftGreenDistance && centerGreenDistance > rightGreenDistance) {
-                greenLocation = 2;
-            } else {
-                greenLocation = 3;
-            }
+        if (leftGreenDistance > centerGreenDistance && leftGreenDistance > rightGreenDistance) {
+            greenLocation = 1;
+        } else if (centerGreenDistance > leftGreenDistance && centerGreenDistance > rightGreenDistance) {
+            greenLocation = 2;
+        } else {
+            greenLocation = 3;
         }
+
+        return greenLocation;
     }
 
     private double colorDistance(NormalizedRGBA a, Color b) {
