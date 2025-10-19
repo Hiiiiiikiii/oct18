@@ -30,28 +30,31 @@ public class HoodTurretController {
      */
     public void update(Gamepad gamepad1, Gamepad gamepad2) {
         // ===== HOOD PRESETS =====
-        if (gamepad1.left_trigger > 0.2) {
+       // if (gamepad1.left_bumper) {
             // Near position
-            hoodLeft.setPosition(RobotConstants.HOOD_NEAR);
-            hoodRight.setPosition(RobotConstants.HOOD_NEAR);
-        } else if (gamepad1.right_trigger > 0.2) {
+           // hoodLeft.setPosition(RobotConstants.HOOD_NEAR);
+            //hoodRight.setPosition(RobotConstants.HOOD_NEAR);
+        //} else if (gamepad1.right_bumper) {
             // Far position
-            hoodLeft.setPosition(RobotConstants.HOOD_FAR);
-            hoodRight.setPosition(RobotConstants.HOOD_FAR);
-        }
+          //  hoodLeft.setPosition(RobotConstants.HOOD_FAR);
+            //hoodRight.setPosition(RobotConstants.HOOD_FAR);
+       // }
+        //
 
         // ===== TURRET MANUAL (bumpers on gamepad1) =====
-        if (gamepad1.left_bumper) turretPos -= turretStep;
-        if (gamepad1.right_bumper) turretPos += turretStep;
+        if (gamepad1.left_trigger > .2) turretPos -= turretStep;
+        if (gamepad1.right_trigger > .2) turretPos += turretStep;
         turretPos = clamp(turretPos);
         turret.setPosition(turretPos);
 
+
         // ===== HOOD TESTER (gamepad2 D-pad up/down) =====
-        if (gamepad2.dpad_up) {
+        if (gamepad2.right_bumper) {
             double newHoodPos = hoodLeft.getPosition() + hoodStepFine;
             hoodLeft.setPosition(clamp(newHoodPos));
             hoodRight.setPosition(clamp(newHoodPos));
-        } else if (gamepad2.dpad_down) {
+
+        } else if (gamepad2.left_bumper) {
             double newHoodPos = hoodLeft.getPosition() - hoodStepFine;
             hoodLeft.setPosition(clamp(newHoodPos));
             hoodRight.setPosition(clamp(newHoodPos));
