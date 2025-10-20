@@ -10,12 +10,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.tuning.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ShooterFSMAction;
 
 @Config
 @Autonomous(name = "RedFar6", group = "Auto")
-public class RedFar6 extends LinearOpMode {
+public class RoadrunnerRedFar6 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {

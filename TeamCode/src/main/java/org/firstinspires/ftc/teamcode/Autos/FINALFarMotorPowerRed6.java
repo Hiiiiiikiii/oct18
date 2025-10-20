@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.Autos;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class FarMotorPowerRed6 extends LinearOpMode {
+public class FINALFarMotorPowerRed6 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -91,10 +91,11 @@ public class FarMotorPowerRed6 extends LinearOpMode {
 
         telemetry.update();
 
-
         // ===== INIT ROBOT =====
         MotorPowerFunctions robot = new MotorPowerFunctions();
 
+        // ===== COLOR SENSE DETECTION =====
+        simplifiedColorSensor color = new simplifiedColorSensor();
 
 
         waitForStart();
@@ -116,60 +117,99 @@ public class FarMotorPowerRed6 extends LinearOpMode {
                 telemetry.update();
 
 
-                if (ID == 21) {
-                    shooterFSM.startFSM(1, false); //green
-                    shooterFSM.startFSM(2, false); //purple
-                    shooterFSM.startFSM(3, false); //purple
+                if (ID == 23) {
+                    //1 is center, 2 is right, 3 is left
+                    //must load green in center
+                    //Sequence (purple, purple, green - tag ID 23)
+                    shooterFSM.startFSM(2, false); //purple (right)
+                    shooterFSM.startFSM(3, false); //purple (left)
+                    shooterFSM.startFSM(1, false); //green (center)
                     intake.setPower(1);
-                    //run drive
+                    //Drive
                     robot.move(.7, 500);
                     robot.turn(.7,250);
                     robot.move(1,300);
                     robot.move(-1,300);
                     robot.turn(-.7,250);
                     robot.move(-7,500);
-
+                    //Drive
                     intake.setPower(0);
                     //change this to based on color sensor detection
-                    shooterFSM.startFSM(1, false); //green
-                    shooterFSM.startFSM(2, false); //purple
-                    shooterFSM.startFSM(3, false); //purple
+                    if (color.colorSense() == 1) {
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(2, false);
+                        shooterFSM.startFSM(3, false);
+                    } else if (color.colorSense() == 2) {
+                        shooterFSM.startFSM(2, false);
+                        shooterFSM.startFSM(3, false);
+                        shooterFSM.startFSM(1, false);
+                    } else {
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(3, false);
+                        shooterFSM.startFSM(2, false);
+                    }
                 } else if (ID == 22) {
-                    shooterFSM.startFSM(2, false); //purple
-                    shooterFSM.startFSM(1, false); //green
-                    shooterFSM.startFSM(3, false); //purple
+                    //1 is center, 2 is right, 3 is left
+                    //must load green in center
+                    //Sequence (purple, green, purple - tag ID 22)
+                    shooterFSM.startFSM(2, false); //purple (right)
+                    shooterFSM.startFSM(1, false); //green (center)
+                    shooterFSM.startFSM(3, false); //purple (left)
                     intake.setPower(1);
-                    //run drive
+                    //Drive
                     robot.move(.7, 500);
                     robot.turn(.7,250);
                     robot.move(1,300);
                     robot.move(-1,300);
                     robot.turn(-.7,250);
                     robot.move(-7,500);
+                    //Drive
                     intake.setPower(0);
                     //change this to based on color sensor detection
-                    shooterFSM.startFSM(2, false); //green
-                    shooterFSM.startFSM(1, false); //purple
-                    shooterFSM.startFSM(3, false); //purple
+                    if (color.colorSense() == 1) {
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(3, false);
+                        shooterFSM.startFSM(2, false);
+                    } else if (color.colorSense() == 2) {
+                        shooterFSM.startFSM(3, false);
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(2, false);
+                    } else {
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(2, false);
+                        shooterFSM.startFSM(3, false);
+                    }
                 } else {
-                    shooterFSM.startFSM(2, false); //purple
-                    shooterFSM.startFSM(3, false); //purple
-                    shooterFSM.startFSM(1, false); //green
+                    //1 is center, 2 is right, 3 is left
+                    //must load green in center
+                    //Sequence (green, purple, purple - tag ID 21)
+                    shooterFSM.startFSM(1, false); //green (center)
+                    shooterFSM.startFSM(2, false); //purple (right)
+                    shooterFSM.startFSM(3, false); //purple (left)
                     intake.setPower(1);
+                    //Drive
                     robot.move(.7, 500);
                     robot.turn(.7,250);
                     robot.move(1,300);
                     robot.move(-1,300);
                     robot.turn(-.7,250);
                     robot.move(-7,500);
+                    //Drive
                     intake.setPower(0);
                     //change this to based on color sensor detection
-                    shooterFSM.startFSM(2, false); //green
-                    shooterFSM.startFSM(3, false); //purple
-                    shooterFSM.startFSM(1, false); //purple
-
-
-
+                    if (color.colorSense() == 1) {
+                        shooterFSM.startFSM(3, false);
+                        shooterFSM.startFSM(2, false);
+                        shooterFSM.startFSM(1, false);
+                    } else if (color.colorSense() == 2) {
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(2, false);
+                        shooterFSM.startFSM(3, false);
+                    } else {
+                        shooterFSM.startFSM(2, false);
+                        shooterFSM.startFSM(1, false);
+                        shooterFSM.startFSM(3, false);
+                    }
                 }
             }
         }
