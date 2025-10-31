@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Oct18.HoodTurretController;
-import org.firstinspires.ftc.teamcode.Oct18.RobotConstants;
+import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
 import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
 
 import java.util.concurrent.TimeUnit;
@@ -58,16 +58,16 @@ public class FINALFarMotorPowerBlue6 extends LinearOpMode {
         DcMotor shooterRight = hardwareMap.get(DcMotor.class, "sr");
 
         // ===== INITIAL POSITIONS =====
-        elevatorLeft.setPosition(RobotConstants.ELEVATOR_LEFT_UP);
-        elevatorRight.setPosition(RobotConstants.ELEVATOR_RIGHT_UP);
-        spindexer.setPosition(RobotConstants.SPINDEXER_INTAKE);
-        kicker.setPosition(RobotConstants.KICKER_OUT);
-        turret.setPosition(RobotConstants.TURRET_INITIAL);
-        hoodLeft.setPosition(RobotConstants.HOOD_INITIAL);
-        hoodRight.setPosition(RobotConstants.HOOD_INITIAL);
-        intake.setPower(RobotConstants.INTAKE_OFF);
-        shooterLeft.setPower(RobotConstants.SHOOTER_OFF);
-        shooterRight.setPower(RobotConstants.SHOOTER_OFF);
+        elevatorLeft.setPosition(RobotHardware.ELEVATOR_LEFT_UP);
+        elevatorRight.setPosition(RobotHardware.ELEVATOR_RIGHT_UP);
+        spindexer.setPosition(RobotHardware.SPINDEXER_ONE);
+        kicker.setPosition(RobotHardware.KICKER_OUT);
+        turret.setPosition(RobotHardware.TURRET_INITIAL);
+        hoodLeft.setPosition(RobotHardware.HOOD_INITIAL);
+        hoodRight.setPosition(RobotHardware.HOOD_INITIAL);
+        intake.setPower(RobotHardware.INTAKE_OFF);
+        shooterLeft.setPower(RobotHardware.SHOOTER_OFF);
+        shooterRight.setPower(RobotHardware.SHOOTER_OFF);
 
         // ===== CONTROLLERS =====
         HoodTurretController hoodTurretController = new HoodTurretController(turret, hoodLeft, hoodRight);

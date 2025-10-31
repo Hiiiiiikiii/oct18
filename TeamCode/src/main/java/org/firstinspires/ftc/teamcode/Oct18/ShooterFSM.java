@@ -8,7 +8,7 @@ public class ShooterFSM {
 
     public enum FSMState {
         IDLE, SPIN_SHOOTER, SPINDEXER_SET, ELEVATOR_RIGHT_DOWN, ELEVATOR_LEFT_DOWN,
-        ELEVATORS_UP, KICKER_IN, KICKER_OUT, SHOOTER_OFF
+        ELEVATORS_UP
     }
 
     private FSMState fsmState = FSMState.IDLE;
@@ -51,9 +51,9 @@ public class ShooterFSM {
                 break;
 
             case SPINDEXER_SET:
-                if (fsmBall == 1) spindexer.setPosition(RobotConstants.SPINDEXER_ONE);
-                if (fsmBall == 2) spindexer.setPosition(RobotConstants.SPINDEXER_TWO);
-                if (fsmBall == 3) spindexer.setPosition(RobotConstants.SPINDEXER_THREE);
+                if (fsmBall == 1) spindexer.setPosition(RobotHardware.SPINDEXER_ONE);
+                if (fsmBall == 2) spindexer.setPosition(RobotHardware.SPINDEXER_TWO);
+                if (fsmBall == 3) spindexer.setPosition(RobotHardware.SPINDEXER_THREE);
                 if (fsmTimer.milliseconds() > 1) {
                     fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
                     fsmTimer.reset();
@@ -61,7 +61,7 @@ public class ShooterFSM {
                 break;
 
             case ELEVATOR_RIGHT_DOWN:
-                elevatorRight.setPosition(RobotConstants.ELEVATOR_RIGHT_DOWN);
+                elevatorRight.setPosition(RobotHardware.ELEVATOR_RIGHT_DOWN);
                 if (fsmTimer.milliseconds() > 1) {
                     fsmState = FSMState.ELEVATOR_LEFT_DOWN;
                     fsmTimer.reset();
@@ -69,7 +69,7 @@ public class ShooterFSM {
                 break;
 
             case ELEVATOR_LEFT_DOWN:
-                elevatorLeft.setPosition(RobotConstants.ELEVATOR_LEFT_DOWN);
+                elevatorLeft.setPosition(RobotHardware.ELEVATOR_LEFT_DOWN);
                 if (fsmTimer.milliseconds() > 400) {
                     fsmState = FSMState.ELEVATORS_UP;
                     fsmTimer.reset();
@@ -77,30 +77,14 @@ public class ShooterFSM {
                 break;
 
             case ELEVATORS_UP:
-                elevatorLeft.setPosition(RobotConstants.ELEVATOR_LEFT_UP);
-                elevatorRight.setPosition(RobotConstants.ELEVATOR_RIGHT_UP);
-                if (fsmTimer.milliseconds() > 1) {
-                    fsmState = FSMState.KICKER_IN;
-                    fsmTimer.reset();
-                }
-                break;
-
-            case KICKER_IN:
-                kicker.setPosition(RobotConstants.KICKER_IN);
-                if (fsmTimer.milliseconds() > 1) {
-                    fsmState = FSMState.KICKER_OUT;
-                    fsmTimer.reset();
-                }
-                break;
-
-            case KICKER_OUT:
-                kicker.setPosition(RobotConstants.KICKER_OUT);
+                elevatorLeft.setPosition(RobotHardware.ELEVATOR_LEFT_UP);
+                elevatorRight.setPosition(RobotHardware.ELEVATOR_RIGHT_UP);
                 if (fsmTimer.milliseconds() > 1) {
                     if (multiFSM && fsmBall < 3) {
                         fsmBall++;
                     }
+                    fsmTimer.reset();
                 }
-                fsmActive = false;
                 break;
 
 

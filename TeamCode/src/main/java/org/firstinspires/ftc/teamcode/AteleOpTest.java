@@ -76,10 +76,10 @@ public class AteleOpTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // ===== DRIVETRAIN =====
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("fl");
+        DcMotor backLeftMotor = hardwareMap.dcMotor.get("bl");
+        DcMotor frontRightMotor = hardwareMap.dcMotor.get("fr");
+        DcMotor backRightMotor = hardwareMap.dcMotor.get("br");
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
