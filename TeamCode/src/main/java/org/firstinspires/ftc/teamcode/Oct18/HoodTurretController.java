@@ -15,12 +15,12 @@ public class HoodTurretController {
         this.turret = turret;
         this.hoodLeft = hoodLeft;
         this.hoodRight = hoodRight;
-        this.turretPos = RobotConstants.TURRET_INITIAL;
+        this.turretPos = RobotHardware.TURRET_INITIAL;
 
         // Set initial positions
         this.turret.setPosition(turretPos);
-        this.hoodLeft.setPosition(RobotConstants.HOOD_INITIAL);
-        this.hoodRight.setPosition(RobotConstants.HOOD_INITIAL);
+        this.hoodLeft.setPosition(RobotHardware.HOOD_INITIAL);
+        this.hoodRight.setPosition(RobotHardware.HOOD_INITIAL);
     }
 
     /**
