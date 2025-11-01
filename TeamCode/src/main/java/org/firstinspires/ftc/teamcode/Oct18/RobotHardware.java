@@ -17,10 +17,10 @@ public class RobotHardware {
     public HuskyLens huskyLens;
 
     // ===== ELEVATOR =====
-    public static final double ELEVATOR_LEFT_UP = 222.0 / 355.0;
-    public static final double ELEVATOR_LEFT_DOWN = 330.0 / 355.0;
-    public static final double ELEVATOR_RIGHT_UP = 220.0 / 355.0;
-    public static final double ELEVATOR_RIGHT_DOWN = 330.0 / 355.0;
+    public static final double ELEVATOR_LEFT_UP = 216 / 355.0;
+    public static final double ELEVATOR_LEFT_DOWN = 325 / 355.0;
+    public static final double ELEVATOR_RIGHT_UP = 216 / 355.0;
+    public static final double ELEVATOR_RIGHT_DOWN = 325 / 355.0;
 
     // ===== SPINDEXER =====
     public static final double SPINDEXER_ONE = 0.0 / 355.0;
