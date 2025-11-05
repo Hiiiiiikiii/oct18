@@ -1,7 +1,9 @@
-package org.firstinspires.ftc.teamcode.Oct18;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
 
 public class HoodTurretController {
 
