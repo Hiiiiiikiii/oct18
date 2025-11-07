@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autos;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
 import org.firstinspires.ftc.teamcode.Oct18.ShooterAutoFSM;
 import com.acmerobotics.dashboard.config.Config;
@@ -9,6 +10,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -17,6 +19,8 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.tuning.MecanumDrive;
+
+import java.util.concurrent.TimeUnit;
 
 @Config
 @Autonomous(name = "auton", group = "Autonomous")
@@ -50,7 +54,11 @@ public class auton extends AutonFunctions {
         NormalizedRGBA detectedCenter = colorCenter.getNormalizedColors();
         NormalizedRGBA detectedRight = colorRight.getNormalizedColors();
 
+        HuskyLens huskyLens = hardwareMap.get(HuskyLens.class, "hl");
+
         int greenLocation = 1;
+        final int READ_PERIOD = 1;
+        int id = 21;
 
         if (detectedLeft.blue < detectedLeft.green) {
             greenLocation = 3;
@@ -75,11 +83,13 @@ public class auton extends AutonFunctions {
             purpleLocation2 = 2;
         }
 
-
-
-
-
         ShooterAutoFSM shooterFSM = new ShooterAutoFSM(elevatorLeft, elevatorRight, spindexer, shooterLeft, shooterRight);
+
+        Action intakeOn = (telemetryPacket) -> {
+            intake.setPower(RobotHardware.INTAKE_ON);
+            intake2.setPower(RobotHardware.INTAKE_ON);
+            return false; // false = keep running continuously
+        };
 
         Action scorePreload = drive.actionBuilder(initPose)
                 .setTangent(Math.toRadians(-45))
@@ -118,27 +128,102 @@ public class auton extends AutonFunctions {
                 .strafeTo(new Vector2d(-60, 30))
                 .build();
 
-        waitForStart();
-        if (isStopRequested()) return;
 
-        Actions.runBlocking(
-                new SequentialAction(
-                        shooterFSM.runFSMAction(greenLocation, false),
-                        shooterFSM.runFSMAction(purpleLocation1, false),
-                        shooterFSM.runFSMAction(purpleLocation2, false),
-                        scorePreload,
-                        intakeFirstSet,
-                        goToScoreFirstSet,
-                        shooterFSM.runFSMAction(greenLocation, false),
-                        shooterFSM.runFSMAction(purpleLocation1, false),
-                        shooterFSM.runFSMAction(purpleLocation2, false),
-                        intakeSecondSet,
-                        goToScoreSecondSet,
-                        shooterFSM.runFSMAction(greenLocation, false),
-                        shooterFSM.runFSMAction(purpleLocation1, false),
-                        shooterFSM.runFSMAction(purpleLocation2, false),
-                        park
-                )
-        );
+        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+
+        rateLimit.expire();
+
+        if (!huskyLens.knock()) {
+            telemetry.addData(">>", "Problem communicating with " + huskyLens.getDeviceName());
+        } else {
+            telemetry.addData(">>", "Press start to continue");
+        }
+
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.TAG_RECOGNITION);
+
+        telemetry.update();
+        waitForStart();
+
+        while(opModeIsActive()) {
+            if (!rateLimit.hasExpired()) {
+                continue;
+            }
+            rateLimit.reset();
+
+            HuskyLens.Block[] blocks = huskyLens.blocks();
+            telemetry.addData("Block count", blocks.length);
+            for (int i = 0; i < blocks.length; i++) {
+                telemetry.addData("Block", blocks[i].toString());
+                id = blocks[i].id;
+            }
+        }
+
+        if (id == 21) {
+            // Green Purple Purple
+            Actions.runBlocking(
+                    new SequentialAction(
+                            intakeOn,
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            scorePreload,
+                            intakeFirstSet,
+                            goToScoreFirstSet,
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            intakeSecondSet,
+                            goToScoreSecondSet,
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            park
+                    )
+            );
+        } else if (id == 22) {
+            // Purple Green Purple
+            Actions.runBlocking(
+                    new SequentialAction(
+                            intakeOn,
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            scorePreload,
+                            intakeFirstSet,
+                            goToScoreFirstSet,
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            intakeSecondSet,
+                            goToScoreSecondSet,
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            park
+                    )
+            );
+        } else {
+            // Purple Purple Green
+            Actions.runBlocking(
+                    new SequentialAction(
+                            intakeOn,
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            scorePreload,
+                            intakeFirstSet,
+                            goToScoreFirstSet,
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            intakeSecondSet,
+                            goToScoreSecondSet,
+                            shooterFSM.runFSMAction(purpleLocation1, false),
+                            shooterFSM.runFSMAction(purpleLocation2, false),
+                            shooterFSM.runFSMAction(greenLocation, false),
+                            park
+                    )
+            );
+        }
     }
 }

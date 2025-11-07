@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Oct18;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -59,6 +60,8 @@ public class ATeleOPMAIN extends LinearOpMode {
         RevColorSensorV3 colorLeft = hardwareMap.get(RevColorSensorV3.class, "cl");
         RevColorSensorV3 colorCenter = hardwareMap.get(RevColorSensorV3.class, "cc");
         RevColorSensorV3 colorRight = hardwareMap.get(RevColorSensorV3.class, "cr");
+
+        HuskyLens huskyLens = hardwareMap.get(HuskyLens.class, "hl");
 
         ShooterFSM shooterFSM = new ShooterFSM(elevatorLeft, elevatorRight, spindexer,
                 shooterLeft, shooterRight);
