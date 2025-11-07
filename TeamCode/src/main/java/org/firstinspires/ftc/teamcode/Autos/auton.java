@@ -85,7 +85,7 @@ public class auton extends AutonFunctions{
 
         Actions.runBlocking(
                 new SequentialAction(
-                        shooterFSM.startFSM(greenLocation, false),
+                        shooterFSM.runFSMAction(greenLocation, false),
                         scorePreload,
                         intakeFirstSet,
                         goToScoreFirstSet,

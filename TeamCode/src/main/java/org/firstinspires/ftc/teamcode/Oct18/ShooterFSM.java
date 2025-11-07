@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Oct18;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,7 +14,7 @@ public class ShooterFSM {
         SPINDEXER_SET,
         ELEVATOR_RIGHT_DOWN,
         ELEVATOR_LEFT_DOWN,
-        SHOOTER_RECOVER,      // new state to let shooter spool up again
+        SHOOTER_RECOVER,
         ELEVATORS_UP
     }
 
@@ -34,6 +36,7 @@ public class ShooterFSM {
         this.shooterRight = shooterRight;
     }
 
+    /** Starts the shooter FSM */
     public void startFSM(int ball, boolean multi) {
         fsmBall = ball;
         multiFSM = multi;
@@ -42,17 +45,16 @@ public class ShooterFSM {
         fsmTimer.reset();
     }
 
+    /** Updates the FSM logic (should be called periodically) */
     public void updateFSM() {
         if (!fsmActive) return;
 
         switch (fsmState) {
 
             case SPIN_SHOOTER:
-                // Turn on shooter once at start
                 shooterLeft.setPower(RobotHardware.SHOOTER_ON);
                 shooterRight.setPower(RobotHardware.SHOOTER_ON);
 
-                // Give time to spool up
                 if (fsmTimer.milliseconds() > 100) {
                     fsmState = FSMState.SPINDEXER_SET;
                     fsmTimer.reset();
@@ -80,7 +82,6 @@ public class ShooterFSM {
 
             case ELEVATOR_LEFT_DOWN:
                 elevatorLeft.setPosition(RobotHardware.ELEVATOR_LEFT_DOWN);
-                // After both elevators are down, let shooter recover speed
                 if (fsmTimer.milliseconds() > 400) {
                     fsmState = FSMState.SHOOTER_RECOVER;
                     fsmTimer.reset();
@@ -88,7 +89,6 @@ public class ShooterFSM {
                 break;
 
             case SHOOTER_RECOVER:
-                // Do nothing, just wait to let shooter spool up again
                 if (fsmTimer.milliseconds() > 100) {
                     fsmState = FSMState.ELEVATORS_UP;
                     fsmTimer.reset();
@@ -105,7 +105,6 @@ public class ShooterFSM {
                         fsmState = FSMState.SPINDEXER_SET;
                         fsmTimer.reset();
                     } else {
-                        // Done shooting all balls
                         shooterLeft.setPower(RobotHardware.SHOOTER_OFF);
                         shooterRight.setPower(RobotHardware.SHOOTER_OFF);
                         spindexer.setPosition(RobotHardware.SPINDEXER_ONE);
@@ -117,7 +116,25 @@ public class ShooterFSM {
         }
     }
 
+
     public boolean isActive() { return fsmActive; }
+
     public FSMState getState() { return fsmState; }
+
     public int getBall() { return fsmBall; }
+    public Action runFSMAction(int ball, boolean multi) {
+        return new Action() {
+            private boolean started = false;
+
+            @Override
+            public boolean run(TelemetryPacket packet) {
+                if (!started) {
+                    startFSM(ball, multi);
+                    started = true;
+                }
+                updateFSM();
+                return fsmActive; // keep running until FSM completes
+            }
+        };
+    }
 }
