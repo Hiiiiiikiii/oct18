@@ -26,7 +26,7 @@ public class simplifiedColorSensor {
     public boolean rightGreen = false;
     public boolean rightPurple = false;
 
-    int colorSense() {
+    public int colorSense() {
 
         //Sensors
         colorLeft = hardwareMap.get(RevColorSensorV3.class, "cl");

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Oct18;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -53,7 +56,9 @@ public class ATeleOPMAIN extends LinearOpMode {
         shooterLeft.setPower(RobotHardware.SHOOTER_OFF);
         shooterRight.setPower(RobotHardware.SHOOTER_OFF);
 
-
+        RevColorSensorV3 colorLeft = hardwareMap.get(RevColorSensorV3.class, "cl");
+        RevColorSensorV3 colorCenter = hardwareMap.get(RevColorSensorV3.class, "cc");
+        RevColorSensorV3 colorRight = hardwareMap.get(RevColorSensorV3.class, "cr");
 
         ShooterFSM shooterFSM = new ShooterFSM(elevatorLeft, elevatorRight, spindexer,
                 shooterLeft, shooterRight);
