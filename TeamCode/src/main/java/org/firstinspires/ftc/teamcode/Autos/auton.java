@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.Autos;
-
+import org.firstinspires.ftc.teamcode.Oct18.ShooterAutoFSM;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -10,12 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
 import org.firstinspires.ftc.teamcode.tuning.MecanumDrive;
 
 @Config
 @Autonomous(name = "auton", group = "Autonomous")
-public class auton extends AutonFunctions{
+public class auton extends AutonFunctions {
 
     @Override
     public void runOpMode() {
@@ -23,6 +22,7 @@ public class auton extends AutonFunctions{
         MecanumDrive drive = new MecanumDrive(hardwareMap, initPose);
         simplifiedColorSensor color = new simplifiedColorSensor();
         int greenLocation = color.colorSense();
+
         int purpleLocation1;
         int purpleLocation2;
         if (greenLocation == 1) {
@@ -48,12 +48,11 @@ public class auton extends AutonFunctions{
         DcMotor shooterLeft = hardwareMap.get(DcMotor.class, "sl");
         DcMotor shooterRight = hardwareMap.get(DcMotor.class, "sr");
 
-        ShooterFSM shooterFSM = new ShooterFSM(elevatorLeft, elevatorRight, spindexer, shooterLeft, shooterRight);
+        ShooterAutoFSM shooterFSM = new ShooterAutoFSM(elevatorLeft, elevatorRight, spindexer, shooterLeft, shooterRight);
 
         Action scorePreload = drive.actionBuilder(initPose)
                 .setTangent(Math.toRadians(-45))
                 .splineToConstantHeading(new Vector2d(-20, 20), Math.toRadians(-45))
-                // shoot
                 .waitSeconds(2)
                 .build();
 
@@ -68,7 +67,6 @@ public class auton extends AutonFunctions{
                 .setTangent(Math.toRadians(-90))
                 .splineToSplineHeading(new Pose2d(-12, 20, Math.toRadians(135)), Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(-20, 20, Math.toRadians(135)), Math.toRadians(135))
-                //shoot
                 .waitSeconds(2)
                 .build();
 
@@ -82,7 +80,6 @@ public class auton extends AutonFunctions{
         Action goToScoreSecondSet = drive.actionBuilder(new Pose2d(12, 58, Math.toRadians(90)))
                 .setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(-20, 20, Math.toRadians(135)), Math.toRadians(135))
-                //shoot
                 .waitSeconds(2)
                 .build();
 
@@ -90,9 +87,7 @@ public class auton extends AutonFunctions{
                 .strafeTo(new Vector2d(-60, 30))
                 .build();
 
-
         waitForStart();
-
         if (isStopRequested()) return;
 
         Actions.runBlocking(
