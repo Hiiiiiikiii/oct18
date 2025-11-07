@@ -11,7 +11,7 @@ public class TuneColorSensor extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Get color sensor from configuration
-        NormalizedColorSensor colorSensor = hardwareMap.get(NormalizedColorSensor.class, "cs");
+        NormalizedColorSensor colorSensor = hardwareMap.get(NormalizedColorSensor.class, "cr");
 
         telemetry.addLine("Color Sensor Tuner Ready");
         telemetry.addLine("Place the object (ball) above the sensor and press PLAY.");

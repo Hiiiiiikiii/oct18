@@ -7,7 +7,10 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
 import org.firstinspires.ftc.teamcode.tuning.MecanumDrive;
 
 @Config
@@ -18,6 +21,22 @@ public class auton extends AutonFunctions{
     public void runOpMode() {
         Pose2d initPose = new Pose2d(-52, 52, Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initPose);
+        simplifiedColorSensor color = new simplifiedColorSensor();
+        int greenLocation = color.colorSense();
+
+        Servo elevatorLeft = hardwareMap.get(Servo.class, "el");
+        Servo elevatorRight = hardwareMap.get(Servo.class, "er");
+        Servo turret = hardwareMap.get(Servo.class, "tur");
+        Servo hoodLeft = hardwareMap.get(Servo.class, "hl");
+        Servo hoodRight = hardwareMap.get(Servo.class, "hr");
+        Servo spindexer = hardwareMap.get(Servo.class, "spin");
+
+        DcMotor intake = hardwareMap.get(DcMotor.class, "in");
+        DcMotor intake2 = hardwareMap.get(DcMotor.class, "in2");
+        DcMotor shooterLeft = hardwareMap.get(DcMotor.class, "sl");
+        DcMotor shooterRight = hardwareMap.get(DcMotor.class, "sr");
+
+        ShooterFSM shooterFSM = new ShooterFSM(elevatorLeft, elevatorRight, spindexer, shooterLeft, shooterRight);
 
         Action scorePreload = drive.actionBuilder(initPose)
                 .setTangent(Math.toRadians(-45))
@@ -66,6 +85,7 @@ public class auton extends AutonFunctions{
 
         Actions.runBlocking(
                 new SequentialAction(
+                        shooterFSM.startFSM(greenLocation, false),
                         scorePreload,
                         intakeFirstSet,
                         goToScoreFirstSet,

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Autos;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -9,60 +10,69 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 public class simplifiedColorSensor {
 
     // Sensors
-    public NormalizedColorSensor colorLeft;
-    public NormalizedColorSensor colorCenter;
-    public NormalizedColorSensor colorRight;
+    public RevColorSensorV3 colorLeft;
+    public RevColorSensorV3 colorCenter;
+    public RevColorSensorV3 colorRight;
     NormalizedRGBA detectedLeft;
     NormalizedRGBA detectedCenter;
     NormalizedRGBA detectedRight;
-    int greenLocation = 1;
 
-    //RGB Values
-    //TODO: NEED TO TUNE THESE
-    private final Color kGreenTarget = new Color(0.145, 0.588, 0.745);
+    public int greenLocation = 1;
+
+    public boolean leftGreen = false;
+    public boolean leftPurple = false;
+    public boolean centerGreen = false;
+    public boolean centerPurple = false;
+    public boolean rightGreen = false;
+    public boolean rightPurple = false;
 
     int colorSense() {
 
         //Sensors
-        colorLeft = hardwareMap.get(NormalizedColorSensor.class, "cl");
-        colorCenter = hardwareMap.get(NormalizedColorSensor.class, "cc");
-        colorRight = hardwareMap.get(NormalizedColorSensor.class, "cr");
+        colorLeft = hardwareMap.get(RevColorSensorV3.class, "cl");
+        colorCenter = hardwareMap.get(RevColorSensorV3.class, "cc");
+        colorRight = hardwareMap.get(RevColorSensorV3.class, "cr");
 
         detectedLeft = colorLeft.getNormalizedColors();
         detectedCenter = colorCenter.getNormalizedColors();
         detectedRight = colorRight.getNormalizedColors();
 
-        //Comparing Left Color Sensor
-        double leftGreenDistance = colorDistance(detectedLeft, kGreenTarget);
-        double centerGreenDistance = colorDistance(detectedCenter, kGreenTarget);
-        double rightGreenDistance = colorDistance(detectedRight, kGreenTarget);
+        if (detectedLeft.blue > detectedLeft.green) {
+            leftGreen = false;
+            leftPurple = true;
+        } else if (detectedLeft.blue < detectedLeft.green) {
+            leftGreen = true;
+            leftPurple = false;
+            greenLocation = 3;
+        } else {
+            leftGreen = false;
+            leftPurple = false;
+        }
 
-        if (leftGreenDistance > centerGreenDistance && leftGreenDistance > rightGreenDistance) {
+        if (detectedCenter.blue > detectedCenter.green) {
+            centerGreen = false;
+            centerPurple = true;
+        } else if (detectedCenter.blue < detectedCenter.green) {
+            centerGreen = true;
+            centerPurple = false;
             greenLocation = 1;
-        } else if (centerGreenDistance > leftGreenDistance && centerGreenDistance > rightGreenDistance) {
+        } else {
+            centerGreen = false;
+            centerPurple = false;
+        }
+
+        if (detectedRight.blue > detectedRight.green) {
+            rightGreen = false;
+            rightPurple = true;
+        } else if (detectedRight.blue < detectedRight.green) {
+            rightGreen = true;
+            rightPurple = false;
             greenLocation = 2;
         } else {
-            greenLocation = 3;
+            rightGreen = false;
+            rightPurple = false;
         }
 
         return greenLocation;
-    }
-
-    private double colorDistance(NormalizedRGBA a, Color b) {
-        return Math.sqrt(
-                Math.pow(a.red - b.red, 2)
-                        + Math.pow(a.green - b.green, 2)
-                        + Math.pow(a.blue - b.blue, 2));
-    }
-
-    public class Color {
-
-        public double red, green, blue;
-
-        public Color(double r, double g, double b) {
-            this.red = r;
-            this.green = g;
-            this.blue = b;
-        }
     }
 }
