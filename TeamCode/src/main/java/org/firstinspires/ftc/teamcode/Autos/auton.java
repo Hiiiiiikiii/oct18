@@ -23,6 +23,18 @@ public class auton extends AutonFunctions{
         MecanumDrive drive = new MecanumDrive(hardwareMap, initPose);
         simplifiedColorSensor color = new simplifiedColorSensor();
         int greenLocation = color.colorSense();
+        int purpleLocation1;
+        int purpleLocation2;
+        if (greenLocation == 1) {
+            purpleLocation1 = 2;
+            purpleLocation2 = 3;
+        } else if (greenLocation == 2) {
+            purpleLocation1 = 1;
+            purpleLocation2 = 3;
+        } else {
+            purpleLocation1 = 1;
+            purpleLocation2 = 2;
+        }
 
         Servo elevatorLeft = hardwareMap.get(Servo.class, "el");
         Servo elevatorRight = hardwareMap.get(Servo.class, "er");
@@ -86,6 +98,8 @@ public class auton extends AutonFunctions{
         Actions.runBlocking(
                 new SequentialAction(
                         shooterFSM.runFSMAction(greenLocation, false),
+                        shooterFSM.runFSMAction(purpleLocation1, false),
+                        shooterFSM.runFSMAction(purpleLocation2, false),
                         scorePreload,
                         intakeFirstSet,
                         goToScoreFirstSet,
