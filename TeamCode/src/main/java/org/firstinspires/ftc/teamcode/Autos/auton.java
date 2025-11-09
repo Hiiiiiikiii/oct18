@@ -54,7 +54,7 @@ public class auton extends AutonFunctions {
         NormalizedRGBA detectedCenter = colorCenter.getNormalizedColors();
         NormalizedRGBA detectedRight = colorRight.getNormalizedColors();
 
-        HuskyLens huskyLens = hardwareMap.get(HuskyLens.class, "hl");
+        HuskyLens huskyLens = hardwareMap.get(HuskyLens.class, "husky");
 
         int greenLocation = 1;
         final int READ_PERIOD = 1;

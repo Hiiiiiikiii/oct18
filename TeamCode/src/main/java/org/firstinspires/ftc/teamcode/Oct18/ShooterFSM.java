@@ -55,7 +55,7 @@ public class ShooterFSM {
                 shooterLeft.setPower(RobotHardware.SHOOTER_ON);
                 shooterRight.setPower(RobotHardware.SHOOTER_ON);
 
-                if (fsmTimer.milliseconds() > 100) {
+                if (fsmTimer.milliseconds() > 150) {
                     fsmState = FSMState.SPINDEXER_SET;
                     fsmTimer.reset();
                 }
@@ -66,9 +66,16 @@ public class ShooterFSM {
                 if (fsmBall == 2) spindexer.setPosition(RobotHardware.SPINDEXER_TWO);
                 if (fsmBall == 3) spindexer.setPosition(RobotHardware.SPINDEXER_THREE);
 
-                if (fsmTimer.milliseconds() > 100) {
-                    fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
-                    fsmTimer.reset();
+                if (multiFSM && fsmBall == 1) {
+                    if (fsmTimer.milliseconds() > 950) {
+                        fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
+                        fsmTimer.reset();
+                    }
+                } else {
+                    if (fsmTimer.milliseconds() > 700) {
+                        fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
+                        fsmTimer.reset();
+                    }
                 }
                 break;
 
@@ -99,7 +106,7 @@ public class ShooterFSM {
                 elevatorLeft.setPosition(RobotHardware.ELEVATOR_LEFT_UP);
                 elevatorRight.setPosition(RobotHardware.ELEVATOR_RIGHT_UP);
 
-                if (fsmTimer.milliseconds() > 300) {
+                if (fsmTimer.milliseconds() > 350) {
                     if (multiFSM && fsmBall < 3) {
                         fsmBall++;
                         fsmState = FSMState.SPINDEXER_SET;

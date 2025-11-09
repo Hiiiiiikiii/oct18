@@ -29,10 +29,10 @@ RobotHardware {
     // ===== INTAKE =====
     public static final double INTAKE_OFF = 0.0;
     public static final double INTAKE_ON = 1.0;
-    public static final double INTAKE_REVERSE = -1.0;
+    public static final double INTAKE_REVERSE = -0.7;
 
     // ===== SHOOTER =====
-    public static final double SHOOTER_ON = 1.0;
+    public static final double SHOOTER_ON = 0.7;
     public static final double SHOOTER_OFF = 0.0;
 
     // ===== TURRET =====
@@ -42,7 +42,7 @@ RobotHardware {
     public static final double TURRET_BLUE_AUTO = 0.85;
 
     // ===== HOOD =====
-    public static final double HOOD_INITIAL = 0.4483;
+    public static final double HOOD_INITIAL = 0.7215;
     public static final double HOOD_STEP = 1.0 / 355.0;
     public static final double HOOD_FAR = 120 / 355.0;
     public static final double HOOD_NEAR = 99.4 / 355.0;

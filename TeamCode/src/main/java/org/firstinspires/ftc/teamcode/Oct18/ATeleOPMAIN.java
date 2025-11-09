@@ -61,7 +61,7 @@ public class ATeleOPMAIN extends LinearOpMode {
         RevColorSensorV3 colorCenter = hardwareMap.get(RevColorSensorV3.class, "cc");
         RevColorSensorV3 colorRight = hardwareMap.get(RevColorSensorV3.class, "cr");
 
-        HuskyLens huskyLens = hardwareMap.get(HuskyLens.class, "hl");
+        HuskyLens huskyLens = hardwareMap.get(HuskyLens.class, "husky");
 
         ShooterFSM shooterFSM = new ShooterFSM(elevatorLeft, elevatorRight, spindexer,
                 shooterLeft, shooterRight);
@@ -120,9 +120,9 @@ public class ATeleOPMAIN extends LinearOpMode {
             // ===== FSM CONTROL =====
             if (!shooterFSM.isActive()) {
                 if (gamepad1.a) shooterFSM.startFSM(1, false);
-                if (gamepad1.b) shooterFSM.startFSM(2, false);
+                if (gamepad1.y) shooterFSM.startFSM(2, false);
                 if (gamepad1.x) shooterFSM.startFSM(3, false);
-                if (gamepad1.y) shooterFSM.startFSM(1, true); // Multi-ball, turns shooter on/off
+                if (gamepad1.b) shooterFSM.startFSM(1, true); // Multi-ball, turns shooter on/off
             }
 
             shooterFSM.updateFSM();

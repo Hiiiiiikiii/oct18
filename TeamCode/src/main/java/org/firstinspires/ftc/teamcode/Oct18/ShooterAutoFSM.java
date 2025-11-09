@@ -25,7 +25,7 @@ public class ShooterAutoFSM {
     private int fsmBall = 0;
     private boolean multiFSM = false;
 
-    private final Servo elevatorLeft, elevatorRight, spindexer;
+    public final Servo elevatorLeft, elevatorRight, spindexer;
     private final DcMotor shooterLeft, shooterRight;
 
     public ShooterAutoFSM(Servo elevatorLeft, Servo elevatorRight, Servo spindexer,
@@ -56,7 +56,7 @@ public class ShooterAutoFSM {
                 shooterRight.setPower(RobotHardware.SHOOTER_ON);
 
                 // Allow spool-up time before advancing
-                if (fsmTimer.milliseconds() > 100) {
+                if (fsmTimer.milliseconds() > 150) {
                     fsmState = FSMState.SPINDEXER_SET;
                     fsmTimer.reset();
                 }
@@ -68,9 +68,16 @@ public class ShooterAutoFSM {
                 if (fsmBall == 3) spindexer.setPosition(RobotHardware.SPINDEXER_THREE);
 
                 // INCREASED THE WAIT TIME HERE
-                if (fsmTimer.milliseconds() > 700) {
-                    fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
-                    fsmTimer.reset();
+                if (multiFSM && fsmBall == 1) {
+                    if (fsmTimer.milliseconds() > 950) {
+                        fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
+                        fsmTimer.reset();
+                    }
+                } else {
+                    if (fsmTimer.milliseconds() > 600) {
+                        fsmState = FSMState.ELEVATOR_RIGHT_DOWN;
+                        fsmTimer.reset();
+                    }
                 }
                 break;
 
@@ -101,7 +108,7 @@ public class ShooterAutoFSM {
                 elevatorLeft.setPosition(RobotHardware.ELEVATOR_LEFT_UP);
                 elevatorRight.setPosition(RobotHardware.ELEVATOR_RIGHT_UP);
 
-                if (fsmTimer.milliseconds() > 300) {
+                if (fsmTimer.milliseconds() > 350) {
                     if (multiFSM && fsmBall < 3) {
                         fsmBall++;
                         fsmState = FSMState.SPINDEXER_SET;
