@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Oct18;
+package org.firstinspires.ftc.teamcode.UNESSESARY;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,8 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "ThreeBallBlue", group = "Auto")
-public class ThreeBallBlue extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
+import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
+
+@Autonomous(name = "FarToCloseBLUE", group = "Auto")
+public class FarToCloseBLUE extends LinearOpMode {
 
     // ===== PRESET POSITIONS (commented out for now) =====
     private static final double RED_POS1_HOOD = 0.4483;
@@ -80,28 +83,26 @@ public class ThreeBallBlue extends LinearOpMode {
 
         waitForStart();
         if (isStopRequested()) return;
-// ===== Turn on intake after 100 ms of match start =====
-        sleep(100);
-        intake.setPower(RobotHardware.INTAKE_ON);
-        intake2.setPower(RobotHardware.INTAKE_ON);
-        // ==== STAGE 1: Move back & shoot 3 balls ====
+// ===== Turn on intake after 100 ms of match start =====5
+        // ==== STAGE 1: Move forward
+        sleep(10000);//PLACEHOLDER
         drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-                -0.7, -0.7, -0.7, -0.7, 900);
-
-        shooterFSM.startFSM(1, true);
+                0.9, 0.9,   0.9, 0.9, 900); // forward
+        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
+                -0.7, -0.7, 0.7, 0.7, 200); // rotate
+        sleep(100);//PLACEHOLDER
+        shooterFSM.startFSM(1, true); //SHOOT
         while (opModeIsActive() && shooterFSM.isActive()) {
             shooterFSM.updateFSM();
         }
         spindexer.setPosition(RobotHardware.SPINDEXER_ONE);
-
-        sleep(200);
-
-        // ==== STAGE 2: Rotate & move for next set ====
+        sleep(200);//PLACEHOLDER
         drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-                0.5, 0.5, -0.5, -0.5, 220); // rotate
-        sleep(100);
+                0.7, 0.7, -0.7, -0.7, 200); // rotate
+        sleep(200);//PLACEHOLDER
         drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
                 -0.9, -0.9, -0.9, -0.9, 300); // backward
+
 
 
 //        // Turn ON intake before first forward 800

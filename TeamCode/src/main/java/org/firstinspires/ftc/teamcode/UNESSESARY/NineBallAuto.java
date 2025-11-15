@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Oct18;
+package org.firstinspires.ftc.teamcode.UNESSESARY;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,11 +6,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "FarToCloseRED", group = "Auto")
-public class FarToCloseRED extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.Oct18.RobotHardware;
+import org.firstinspires.ftc.teamcode.Oct18.ShooterFSM;
+
+@Autonomous(name = "NineBallAuto", group = "Auto")
+public class NineBallAuto extends LinearOpMode {
 
     // ===== PRESET POSITIONS (commented out for now) =====
-    private static final double RED_POS1_HOOD = 0.4483;
+     private static final double RED_POS1_HOOD = 0.4483;
     // private static final double RED_POS1_TURRET = 0.15;
     // private static final double RED_POS2_HOOD = 130.0 / 355.0;
     // private static final double RED_POS2_TURRET = 0.25;
@@ -68,8 +71,8 @@ public class FarToCloseRED extends LinearOpMode {
         elevatorRight.setPosition(RobotHardware.ELEVATOR_RIGHT_UP);
         spindexer.setPosition(RobotHardware.SPINDEXER_ONE);
         // turret.setPosition(RED_POS1_TURRET);
-        hoodLeft.setPosition(RED_POS1_HOOD);
-        hoodRight.setPosition(RED_POS1_HOOD);
+         hoodLeft.setPosition(RED_POS1_HOOD);
+         hoodRight.setPosition(RED_POS1_HOOD);
         intake.setPower(RobotHardware.INTAKE_OFF);
         intake2.setPower(RobotHardware.INTAKE_OFF);
         shooterLeft.setPower(RobotHardware.SHOOTER_OFF);
@@ -80,45 +83,38 @@ public class FarToCloseRED extends LinearOpMode {
 
         waitForStart();
         if (isStopRequested()) return;
-// ===== Turn on intake after 100 ms of match start =====5
-        // ==== STAGE 1: Move forward
-        sleep(10000);//PLACEHOLDER
+// ===== Turn on intake after 100 ms of match start =====
+        sleep(100);
+        intake.setPower(RobotHardware.INTAKE_ON);
+        intake2.setPower(RobotHardware.INTAKE_ON);
+        // ==== STAGE 1: Move back & shoot 3 balls ====
         drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-                0.9, 0.9,   0.9, 0.9, 930); // forward
-        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-                0.7, 0.7, -0.7, -0.7, 200); // rotate
-        sleep(100);//PLACEHOLDER
-        shooterFSM.startFSM(1, true); //SHOOT
+                -0.7, -0.7, -0.7, -0.7, 900);
+
+        shooterFSM.startFSM(1, true);
         while (opModeIsActive() && shooterFSM.isActive()) {
             shooterFSM.updateFSM();
         }
         spindexer.setPosition(RobotHardware.SPINDEXER_ONE);
-        sleep(200);//PLACEHOLDER
+
+        sleep(200);
+
+        // ==== STAGE 2: Rotate & move for next set ====
         drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-                -0.7, -0.7, 0.7, 0.7, 200); // rotate
-        sleep(200);//PLACEHOLDER
+                0.5, 0.5, -0.5, -0.5, 220); // rotate
         drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-                -0.9, -0.9, -0.9, -0.9, 300); // backward
+                0.5, -0.5, -0.5, 0.5, 550); // move right
+        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
+               0.6, 0.6, 0.6, 0.6, 1000); // forward
+        sleep(400);
+       drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
+              -0.9, -0.9, -0.9, -0.9, 800); // backward
+        sleep(600);
+        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
+                -0.5, 0.5, 0.5, -0.5, 550); // move left
+        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
+                -0.5, -0.5, 0.5, 0.5, 220); // rotate
 
-
-
-//        // Turn ON intake before first forward 800
-//        intake.setPower(RobotHardware.INTAKE_ON);
-//        intake2.setPower(RobotHardware.INTAKE_ON);
-//        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-//                0.5, -0.5, -0.5, 0.5, 550); // move right
-//        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-//                0.6, 0.6, 0.6, 0.6, 1700); // forward
-//        intake.setPower(RobotHardware.INTAKE_ON);
-//        intake2.setPower(RobotHardware.INTAKE_ON);
-//        sleep(600);
-//
-//        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
-//                -0.9, -0.9, -0.9, -0.9, 600); // backward
-//        sleep(600);
-//        // Turn OFF intake after move=
-////        intake.setPower(RobotHardware.INTAKE_OFF);
-////        intake2.setPower(RobotHardware.INTAKE_OFF);
 //        drive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor,
 //                -0.5, -0.5, 0.5, 0.5, 230); // rotate
 //
